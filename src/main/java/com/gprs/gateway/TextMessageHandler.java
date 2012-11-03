@@ -1,9 +1,13 @@
 package com.gprs.gateway;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +30,21 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
     private static final String SHUTDOWN_COMMAND = "C|STOP";
 
     private ShutdownListener shutdownListener;
+    
+    private static ChannelGroup channels = new DefaultChannelGroup("test");
 
     public TextMessageHandler(ShutdownListener shutdownListener) {
         this.shutdownListener = shutdownListener;
     }
 
+    
+    @Override
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
+    		throws Exception {
+    	e.getChannel().write("Welcome!\n");
+    	channels.add(e.getChannel());
+    	super.channelConnected(ctx, e);
+    }
     /**
      * At this point the message will be lined delimited and these messages can
      * be directly sent to disruptor for processing.
@@ -46,9 +60,21 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
             l.trace(delimitedMessage);
         if(shutdownRequestedIn(delimitedMessage))
             return;
-        
-        publish(delimitedMessage);
+        l.info("this: {}", this);
+//        publish(delimitedMessage);
+        l.info("message: {}", delimitedMessage);
+        for(Channel channel : channels){
+        	if(channel.equals(e.getChannel())){
+        		channel.write("send success!\n");
+        	}else{
+        		channel.write(delimitedMessage + "\n");
+        	}
+        }
     }
+    public static void main(String[] args) {
+		String[] split = "#aa:fsdf;dd:fff#".split("#|;");
+		System.out.println(split);
+	}
 
     /**
      * This would never be the case in a real gateway as it provides the ability

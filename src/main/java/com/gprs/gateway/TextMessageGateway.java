@@ -18,6 +18,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
 import org.jboss.netty.handler.codec.frame.Delimiters;
 import org.jboss.netty.handler.codec.string.StringDecoder;
+import org.jboss.netty.handler.codec.string.StringEncoder;
 import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,6 +130,7 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
 
                 pipeline.addLast("Framer", new DelimiterBasedFrameDecoder(MAX_LINE_LENGTH, Delimiters.lineDelimiter()));
                 pipeline.addLast("Decoder", new StringDecoder(CharsetUtil.UTF_8));
+                pipeline.addLast("Encoder", new StringEncoder(CharsetUtil.UTF_8));
                 pipeline.addLast("Gateway", new TextMessageHandler(gatewayShutdownListener));
 
                 return pipeline;
