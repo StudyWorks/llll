@@ -11,7 +11,6 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gprs.ShutdownListener;
 
 /**
  * The handler determines what to do with each text line received. In all cases
@@ -29,13 +28,7 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
     /** The special shutdown command */
     private static final String SHUTDOWN_COMMAND = "C|STOP";
 
-    private ShutdownListener shutdownListener;
-    
     private static ChannelGroup channels = new DefaultChannelGroup("test");
-
-    public TextMessageHandler(ShutdownListener shutdownListener) {
-        this.shutdownListener = shutdownListener;
-    }
 
     
     @Override
@@ -58,11 +51,7 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
 
         if(l.isTraceEnabled())
             l.trace(delimitedMessage);
-        if(shutdownRequestedIn(delimitedMessage))
-            return;
-        l.info("this: {}", this);
 //        publish(delimitedMessage);
-        l.info("message: {}", delimitedMessage);
         for(Channel channel : channels){
         	if(channel.equals(e.getChannel())){
         		channel.write("send success!\n");
@@ -71,25 +60,8 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
         	}
         }
     }
-    public static void main(String[] args) {
-		String[] split = "#aa:fsdf;dd:fff#".split("#|;");
-		System.out.println(split);
-	}
 
-    /**
-     * This would never be the case in a real gateway as it provides the ability
-     * for the sender to stop the gateway on the data port.
-     * 
-     * @param delimitedMessage
-     */
-    private boolean shutdownRequestedIn(String delimitedMessage) {
-        if (SHUTDOWN_COMMAND.equals(delimitedMessage)) {
-            shutdownListener.notifyShutdown();
-            return true;
-        }
-        return false;
-    }
-
+   
     /**
      * Finally send the message to the subscriber.
      * 
@@ -103,6 +75,5 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         l.error("Unexpected exception in the text message gateway.  Closing the channel.", e);
         e.getChannel().close();
-        shutdownListener.notifyShutdown();
     }
 }

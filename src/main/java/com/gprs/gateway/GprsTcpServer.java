@@ -23,7 +23,6 @@ import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gprs.ShutdownListener;
 
 /**
  * This is a text gateway that accepts messages line by line.
@@ -32,10 +31,10 @@ import com.gprs.ShutdownListener;
  * 
  * @author ewhite
  */
-public class TextMessageGateway implements Runnable, ShutdownListener {
-    private static final Logger l = LoggerFactory.getLogger(TextMessageGateway.class.getName());
+public class GprsTcpServer implements Runnable {
+    private static final Logger l = LoggerFactory.getLogger(GprsTcpServer.class.getName());
 
-    private static final int TCPIP_PORT = 7000;
+    private static final int TCPIP_PORT = 6060;
 
     private static final String TCPIP_INTERFACE = "0.0.0.0";
 
@@ -50,15 +49,9 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
      */
     private static final int MAX_LINE_LENGTH = 500;
 
-    private ShutdownListener shutdownListener;
-    private CountDownLatch shutdown = new CountDownLatch(1);
-
     private final ChannelGroup allChannels = new DefaultChannelGroup("tm-gateway");
+    
     private ChannelFactory factory;
-
-    public TextMessageGateway(ShutdownListener shutdownListener) {
-        this.shutdownListener = shutdownListener;
-    }
 
     /**
      * Starts the Netty server up and waits for a shutdown message to come
@@ -71,7 +64,6 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
         configureTCPIPSettings(bootstrap);
         startServer(bootstrap);
 
-        waitForShutdown();
     }
 
     /**
@@ -96,22 +88,9 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
         l.info("Started the gateway. "+TCPIP_INTERFACE+":"+TCPIP_PORT);
     }
 
-    public void notifyShutdown() {
-        shutdown.countDown();
-    }
-
     private void configureTCPIPSettings(ServerBootstrap bootstrap) {
         bootstrap.setOption("child.tcpNoDelay", true);
         bootstrap.setOption("child.keepAlive", true);
-    }
-
-    private void waitForShutdown() {
-        try {
-            shutdown.await();
-        } catch (InterruptedException e) {
-            l.info("Gateway interupted waiting for shutdown.", e);
-        }
-        handleShutdown();
     }
 
     /**
@@ -122,7 +101,6 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
      * @param gatewayShutdownListener
      */
     private void configureTextMessageProcessingPipeline(ServerBootstrap bootstrap) {
-        final ShutdownListener gatewayShutdownListener = this;
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
 
             public ChannelPipeline getPipeline() throws Exception {
@@ -131,7 +109,7 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
                 pipeline.addLast("Framer", new DelimiterBasedFrameDecoder(MAX_LINE_LENGTH, Delimiters.lineDelimiter()));
                 pipeline.addLast("Decoder", new StringDecoder(CharsetUtil.UTF_8));
                 pipeline.addLast("Encoder", new StringEncoder(CharsetUtil.UTF_8));
-                pipeline.addLast("Gateway", new TextMessageHandler(gatewayShutdownListener));
+                pipeline.addLast("Gateway", new TextMessageHandler());
 
                 return pipeline;
             }
@@ -141,7 +119,7 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
     /**
      * Properly stops the gateway releasing resources.
      */
-    private void handleShutdown() {
+    public void shutdown() {
         try {
             l.info("Stopping the gateway.");
             ChannelGroupFuture shutdown = allChannels.close();
@@ -149,7 +127,6 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
             factory.releaseExternalResources();
             l.info("Stopped the gateway.");
         } finally {
-            shutdownListener.notifyShutdown();
         }
     }
 }

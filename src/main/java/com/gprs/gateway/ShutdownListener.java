@@ -1,4 +1,4 @@
-package com.gprs;
+package com.gprs.gateway;
 
 /**
  * Used by the gateway to terminate the system on the special
