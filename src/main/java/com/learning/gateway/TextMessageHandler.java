@@ -1,4 +1,4 @@
-package com.gprs.gateway;
+package com.learning.gateway;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;

@@ -1,4 +1,4 @@
-package com.gprs.model;
+package com.learning.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

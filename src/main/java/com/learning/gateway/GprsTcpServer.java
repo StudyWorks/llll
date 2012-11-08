@@ -1,4 +1,4 @@
-package com.gprs.gateway;
+package com.learning.gateway;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;

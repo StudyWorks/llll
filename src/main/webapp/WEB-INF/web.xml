@@ -15,17 +15,24 @@
 	</context-param>
 	<context-param>
 		<param-name>db.password</param-name>
-		<param-value>sa</param-value>
+		<param-value></param-value>
 	</context-param>
 	<context-param>
 		<param-name>db.tcpServer</param-name>
 		<param-value>-tcpAllowOthers</param-value>
 	</context-param>
-
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/classes/applicationContext*.xml</param-value>
+	</context-param>
 	<listener>
 		<listener-class>org.h2.server.web.DbStarter</listener-class>
 	</listener>
-
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
 	<servlet>
 		<servlet-name>H2Console</servlet-name>
 		<servlet-class>org.h2.server.web.WebServlet</servlet-class>

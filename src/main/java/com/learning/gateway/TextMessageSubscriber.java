@@ -1,4 +1,4 @@
-package com.gprs.gateway;
+package com.learning.gateway;
 
 /**
  * The implementor will receive the text message on a Netty
