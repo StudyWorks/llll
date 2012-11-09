@@ -3,6 +3,8 @@ package com.learning.manager;
 import java.io.Serializable;
 import java.util.List;
 
+import org.hibernate.criterion.Criterion;
+
 public interface ISimpleManager {
 
 	<T> T find(Class<T> entityClass, Serializable id);
@@ -23,5 +25,7 @@ public interface ISimpleManager {
 	
 	int executeUpdate(String hql, Object... args);
 
-	<T> List<T> findAll(Class<T> entityClass);
+	<T> List<T> findAll(Class<T> entityClass, Criterion...criterions) ;
+	
+	<T> T findFirst(Class<T> entityClass, Criterion...criterions); 
 }

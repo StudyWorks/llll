@@ -14,7 +14,7 @@
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 			http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
 			http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
-			
+
 	<!-- BoneCP configuration -->
 	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
 		destroy-method="close">
@@ -49,11 +49,11 @@
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 			</props>
 		</property>
-		<!-- 在entity保存时增加创建,修改时间  -->
+		<!-- 在entity保存时增加创建,修改时间 -->
 		<property name="namingStrategy" ref="appNamingStrategy" />
 	</bean>
 
-	<!-- Spring AOP config --> 
+	<!-- Spring AOP config -->
 	<aop:config>
 		<aop:pointcut id="defaultManagerOperation"
 			expression="execution(* com.learning..impl.*Manager.*(..))" />
@@ -72,7 +72,7 @@
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager"
 		p:sessionFactory-ref="sessionFactory" />
-	
+
 
 	<!-- enable the configuration of transactional behavior based on annotations -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -80,5 +80,8 @@
 	<!-- 使用annotation 自动注册bean,并保证@Required,@Autowired的属性被注入 -->
 	<context:component-scan base-package="com.learning" />
 	
+	<task:executor id="SSP-Executor" pool-size="3" />
+	
+	<task:annotation-driven executor="SSP-Executor" />
 	<context:property-placeholder location="classpath:config.properties" />
 </beans>

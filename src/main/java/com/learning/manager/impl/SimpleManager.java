@@ -3,7 +3,9 @@ package com.learning.manager.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Criterion;
 import org.springframework.stereotype.Service;
 
 import com.learning.manager.ISimpleManager;
@@ -54,10 +56,24 @@ public class SimpleManager extends SessionSupport implements ISimpleManager {
 		}
 		return query.executeUpdate();
 	}
+	
 
-	public <T> List<T> findAll(Class<T> entityClass) {
-		return super.getSession().createCriteria(entityClass).list();
+	public <T> List<T> findAll(Class<T> entityClass, Criterion...criterions) {
+		Criteria criteria = super.getSession().createCriteria(entityClass);
+		for(Criterion criterion : criterions){
+			criteria.add(criterion);
+		}
+		return (List<T>)criteria.list();
 	}
-
+	
+	public <T> T findFirst(Class<T> entityClass, Criterion...criterions){
+		Criteria criteria = super.getSession().createCriteria(entityClass);
+		for(Criterion criterion : criterions){
+			criteria.add(criterion);
+		}
+		criteria.setMaxResults(1);
+		return (T)criteria.uniqueResult();
+	}
+	
 
 }

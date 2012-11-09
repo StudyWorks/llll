@@ -1,18 +1,16 @@
 package com.learning.domain;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "t_device_data")
-public class DeviceData {
+public class Device {
 	@Id
 	@GeneratedValue
 	private Long id;
 	//业务主键
 	private String deviceId;
+	
+	private Integer collectedChannelId;
 
 	public Long getId() {
 		return id;
@@ -28,6 +26,14 @@ public class DeviceData {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	public Integer getCollectedChannelId() {
+		return collectedChannelId;
+	}
+
+	public void setCollectedChannelId(Integer collectedChannelId) {
+		this.collectedChannelId = collectedChannelId;
 	}
 	
 	

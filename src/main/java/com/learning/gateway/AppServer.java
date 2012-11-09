@@ -22,6 +22,11 @@ import org.jboss.netty.handler.codec.string.StringEncoder;
 import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.learning.manager.ChannelManager;
 
 
 /**
@@ -31,8 +36,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author ewhite
  */
-public class GprsTcpServer implements Runnable {
-    private static final Logger l = LoggerFactory.getLogger(GprsTcpServer.class.getName());
+@Service
+public class AppServer implements Runnable, InitializingBean{
+    private static final Logger l = LoggerFactory.getLogger(AppServer.class.getName());
 
     private static final int TCPIP_PORT = 6060;
 
@@ -52,6 +58,11 @@ public class GprsTcpServer implements Runnable {
     private final ChannelGroup allChannels = new DefaultChannelGroup("tm-gateway");
     
     private ChannelFactory factory;
+    
+    @Autowired
+    private TextMessageSubscriber textMessageSubscriber;
+    @Autowired
+    private ChannelManager channelManager;
 
     /**
      * Starts the Netty server up and waits for a shutdown message to come
@@ -109,7 +120,8 @@ public class GprsTcpServer implements Runnable {
                 pipeline.addLast("Framer", new DelimiterBasedFrameDecoder(MAX_LINE_LENGTH, Delimiters.lineDelimiter()));
                 pipeline.addLast("Decoder", new StringDecoder(CharsetUtil.UTF_8));
                 pipeline.addLast("Encoder", new StringEncoder(CharsetUtil.UTF_8));
-                pipeline.addLast("Gateway", new TextMessageHandler());
+                pipeline.addLast("collector", new ChannelCollector(channelManager));
+                pipeline.addLast("Gateway", new TextMessageHandler(textMessageSubscriber));
 
                 return pipeline;
             }
@@ -129,4 +141,17 @@ public class GprsTcpServer implements Runnable {
         } finally {
         }
     }
+    
+    public void setTextMessageSubscriber(
+			TextMessageSubscriber textMessageSubscriber) {
+		this.textMessageSubscriber = textMessageSubscriber;
+	}
+    
+    public void setChannelManager(ChannelManager channelManager) {
+		this.channelManager = channelManager;
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		run();
+	}
 }

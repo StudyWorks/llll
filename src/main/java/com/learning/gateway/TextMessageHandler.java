@@ -11,6 +11,8 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.learning.manager.ChannelManager;
+
 
 /**
  * The handler determines what to do with each text line received. In all cases
@@ -25,19 +27,11 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
 
     private static final Logger l = LoggerFactory.getLogger(TextMessageHandler.class.getName());
 
-    /** The special shutdown command */
-    private static final String SHUTDOWN_COMMAND = "C|STOP";
-
-    private static ChannelGroup channels = new DefaultChannelGroup("test");
-
+    private TextMessageSubscriber textMessageSubscriber;
     
-    @Override
-    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
-    		throws Exception {
-    	e.getChannel().write("Welcome!\n");
-    	channels.add(e.getChannel());
-    	super.channelConnected(ctx, e);
-    }
+    public TextMessageHandler(TextMessageSubscriber textMessageSubscriber) {
+    	this.textMessageSubscriber = textMessageSubscriber;
+	}
     /**
      * At this point the message will be lined delimited and these messages can
      * be directly sent to disruptor for processing.
@@ -48,27 +42,9 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
         delimitedMessage = delimitedMessage.trim();
         if ("".equals(delimitedMessage))
             return;
-
         if(l.isTraceEnabled())
             l.trace(delimitedMessage);
-//        publish(delimitedMessage);
-        for(Channel channel : channels){
-        	if(channel.equals(e.getChannel())){
-        		channel.write("send success!\n");
-        	}else{
-        		channel.write(delimitedMessage + "\n");
-        	}
-        }
-    }
-
-   
-    /**
-     * Finally send the message to the subscriber.
-     * 
-     * @param delimitedMessage
-     */
-    private void publish(String delimitedMessage) {
-        System.out.println(delimitedMessage);
+        textMessageSubscriber.accept(delimitedMessage, e.getChannel().getId());
     }
 
     @Override

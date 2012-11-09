@@ -9,6 +9,7 @@ package com.learning.gateway;
 public interface TextMessageSubscriber {
     /**
      * @param delimitedMessage
+     * @param channelId 
      */
-    public void accept(String delimitedMessage);
+    public void accept(String delimitedMessage, Integer channelId);
 }

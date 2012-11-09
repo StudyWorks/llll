@@ -3,6 +3,7 @@ package com.learning.manager;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.testng.annotations.Test;
 
 import com.learning.BaseTestCase;
@@ -13,7 +14,7 @@ public class SimpleManagerTest extends BaseTestCase{
 	private ISimpleManager simpleManager;
 	
 
-	@Test
+	@Test @Rollback(false)
 	public void findAll(){
 		DeviceData dd = new DeviceData();
 		dd.setDeviceId("1234");
