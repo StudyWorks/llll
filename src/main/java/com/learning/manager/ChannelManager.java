@@ -1,5 +1,8 @@
 package com.learning.manager;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
@@ -19,6 +22,11 @@ public class ChannelManager {
 
 	public void remove(Channel channel) {
 		channels.remove(channel);
+	}
+	
+	
+	public Set<Channel> findAll(){
+		return channels;
 	}
 
 }

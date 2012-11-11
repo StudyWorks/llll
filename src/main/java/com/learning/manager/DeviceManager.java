@@ -15,4 +15,14 @@ public class DeviceManager {
 	public Device findByDeviceId(String deviceId){
 		return simpleManager.findFirst(Device.class, Restrictions.eq("deviceId", deviceId));
 	}
+
+	public void createOrUpdate(String deviceId, Integer channelId) {
+		Device device = findByDeviceId(deviceId);
+		if(null == device){
+			device = new Device();
+			device.setDeviceId(deviceId);
+		}
+		device.setCollectedChannelId(channelId);
+		simpleManager.saveOrUpdate(device);
+	}
 }
