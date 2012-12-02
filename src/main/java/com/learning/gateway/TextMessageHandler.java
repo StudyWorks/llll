@@ -1,17 +1,11 @@
 package com.learning.gateway;
 
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.learning.manager.ChannelManager;
 
 
 /**
@@ -25,7 +19,7 @@ import com.learning.manager.ChannelManager;
  */
 public class TextMessageHandler extends SimpleChannelUpstreamHandler {
 
-    private static final Logger l = LoggerFactory.getLogger(TextMessageHandler.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(TextMessageHandler.class);
 
     private TextMessageSubscriber textMessageSubscriber;
     
@@ -42,14 +36,13 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
         delimitedMessage = delimitedMessage.trim();
         if ("".equals(delimitedMessage))
             return;
-        if(l.isTraceEnabled())
-            l.trace(delimitedMessage);
+        logger.debug("messageReceived: {}", delimitedMessage);
         textMessageSubscriber.accept(delimitedMessage, e.getChannel().getId());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        l.error("Unexpected exception in the text message gateway.  Closing the channel.", e);
+    	logger.error("Unexpected exception in the text message gateway.  Closing the channel.", e);
         e.getChannel().close();
     }
 }

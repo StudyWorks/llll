@@ -17,7 +17,7 @@ public class SimpleManagerTest extends BaseTestCase{
 	@Test @Rollback(false)
 	public void findAll(){
 		DeviceData dd = new DeviceData();
-		dd.setDeviceId("1234");
+		dd.setHta("1234");
 		simpleManager.save(dd);
 		List<DeviceData> allDeviceData = simpleManager.findAll(DeviceData.class);
 		System.out.println(allDeviceData.size());

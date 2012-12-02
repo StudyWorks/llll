@@ -7,15 +7,17 @@
 <struts>
 	<constant name="struts.devMode" value="true" />
 	<constant name="struts.custom.i18n.resources" value="global" />
-	<constant name="struts.action.extension" value="do" />
+	<constant name="struts.action.extension" value="x" />
 	<constant name="struts.convention.default.parent.package" value="app-default" />
 	<constant name="struts.convention.package.locators" value="web" />
 	<constant name="struts.convention.package.locators.basePackage" value="com.learning" />
 	<constant name="struts.convention.action.name.separator" value="_" />
 	<constant name="struts.convention.result.path" value="/pages/" />
-	<constant name="struts.convention.actionConfigBuilder" value="app-convention" />
-	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.convention.actionNameBuilder" value="app-convention"/>
+	<bean name="app-convention" type="org.apache.struts2.convention.ActionNameBuilder" 
+		class="com.learning.web.AppActionNameBuilder"/>
 
+	<constant name="struts.ui.theme" value="simple" />
 	<package name="app-default" extends="convention-default">
 		<default-interceptor-ref name="defaultStack" />
 	</package>

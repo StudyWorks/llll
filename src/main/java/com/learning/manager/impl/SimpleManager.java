@@ -8,8 +8,8 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Criterion;
 import org.springframework.stereotype.Service;
 
+import com.learning.dao.SessionSupport;
 import com.learning.manager.ISimpleManager;
-import com.learning.manager.SessionSupport;
 
 
 @Service

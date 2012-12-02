@@ -1,4 +1,4 @@
-package com.learning.manager;
+package com.learning.dao;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
