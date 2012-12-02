@@ -12,6 +12,12 @@
 	<div><a href="deviceIndex.x">设备列表</a></div>
 	<div><a href="deviceDataIndex.x">设备数据列表</a></div>
 	<div><a href="rawDataIndex.x">原始数据列表</a></div>
+	<div>
+		<form action="deviceDataConvert.x" method="post" enctype="multipart/form-data">
+			<input type="file" name="txtFile">
+			<input type="submit" value="txt转换excel">
+		</form>
+	</div>
 </div>
 
 </body>
